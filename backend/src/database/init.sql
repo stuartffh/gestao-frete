@@ -1,18 +1,18 @@
 -- ============================================================================
--- Script de Inicialização do Banco de Dados - Sistema de Gestão de Fretes
+-- Script de Inicializaï¿½ï¿½o do Banco de Dados - Sistema de Gestï¿½o de Fretes
 -- ============================================================================
--- Este script cria todas as tabelas necessárias para o sistema
--- Executar apenas uma vez na primeira inicialização
+-- Este script cria todas as tabelas necessï¿½rias para o sistema
+-- Executar apenas uma vez na primeira inicializaï¿½ï¿½o
 -- ============================================================================
 
--- Extensões
+-- Extensï¿½es
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 -- ============================================================================
 -- RBAC (Role-Based Access Control)
 -- ============================================================================
 
--- Tabela de Roles (Funções/Cargos)
+-- Tabela de Roles (Funï¿½ï¿½es/Cargos)
 CREATE TABLE IF NOT EXISTS roles (
     id SERIAL PRIMARY KEY,
     name VARCHAR(50) UNIQUE NOT NULL,
@@ -22,7 +22,7 @@ CREATE TABLE IF NOT EXISTS roles (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Tabela de Usuários
+-- Tabela de Usuï¿½rios
 CREATE TABLE IF NOT EXISTS users (
     id SERIAL PRIMARY KEY,
     username VARCHAR(50) UNIQUE NOT NULL,
@@ -92,11 +92,11 @@ CREATE TABLE IF NOT EXISTS motoristas (
     deleted_at TIMESTAMP
 );
 
--- Veículos
+-- Veï¿½culos
 CREATE TABLE IF NOT EXISTS veiculos (
     id SERIAL PRIMARY KEY,
     placa VARCHAR(10) UNIQUE NOT NULL,
-    tipo VARCHAR(50) NOT NULL, -- Caminhão, Carreta, Utilitário, etc
+    tipo VARCHAR(50) NOT NULL, -- Caminhï¿½o, Carreta, Utilitï¿½rio, etc
     marca VARCHAR(100),
     modelo VARCHAR(100),
     ano INTEGER,
@@ -105,7 +105,7 @@ CREATE TABLE IF NOT EXISTS veiculos (
     chassi VARCHAR(30),
     capacidade_kg DECIMAL(10,2),
     capacidade_m3 DECIMAL(10,2),
-    proprietario VARCHAR(100), -- Próprio, Terceiro
+    proprietario VARCHAR(100), -- Prï¿½prio, Terceiro
     valor_fipe DECIMAL(12,2),
     km_atual INTEGER,
     vencimento_ipva DATE,
@@ -122,7 +122,7 @@ CREATE TABLE IF NOT EXISTS veiculos (
 -- Clientes
 CREATE TABLE IF NOT EXISTS clientes (
     id SERIAL PRIMARY KEY,
-    tipo VARCHAR(20) NOT NULL, -- PF (Pessoa Física) ou PJ (Pessoa Jurídica)
+    tipo VARCHAR(20) NOT NULL, -- PF (Pessoa Fï¿½sica) ou PJ (Pessoa Jurï¿½dica)
     nome VARCHAR(255) NOT NULL,
     razao_social VARCHAR(255),
     cpf_cnpj VARCHAR(18) UNIQUE NOT NULL,
@@ -146,7 +146,7 @@ CREATE TABLE IF NOT EXISTS clientes (
 );
 
 -- ============================================================================
--- Gestão de Viagens e Ordens de Serviço
+-- Gestï¿½o de Viagens e Ordens de Serviï¿½o
 -- ============================================================================
 
 CREATE TABLE IF NOT EXISTS viagens (
@@ -186,22 +186,13 @@ CREATE TABLE IF NOT EXISTS viagens (
     valor_pedagio DECIMAL(12,2) DEFAULT 0,
     valor_combustivel DECIMAL(12,2) DEFAULT 0,
     outras_despesas DECIMAL(12,2) DEFAULT 0,
-    valor_total DECIMAL(12,2) GENERATED ALWAYS AS (
-        COALESCE(valor_frete, 0) +
-        COALESCE(valor_pedagio, 0) +
-        COALESCE(valor_combustivel, 0) +
-        COALESCE(outras_despesas, 0)
-    ) STORED,
+    valor_total DECIMAL(12,2) DEFAULT 0,
 
     -- Status e Controle
     status VARCHAR(50) DEFAULT 'pendente', -- pendente, em_transito, entregue, cancelada
     km_inicial INTEGER,
     km_final INTEGER,
-    km_percorrido INTEGER GENERATED ALWAYS AS (
-        CASE WHEN km_final IS NOT NULL AND km_inicial IS NOT NULL
-        THEN km_final - km_inicial
-        ELSE NULL END
-    ) STORED,
+    km_percorrido INTEGER,
 
     observacoes TEXT,
     anexos JSONB DEFAULT '[]'::jsonb,
@@ -239,13 +230,13 @@ CREATE TABLE IF NOT EXISTS notas_fiscais (
 );
 
 -- ============================================================================
--- Gestão Financeira - Contas a Pagar e Receber
+-- Gestï¿½o Financeira - Contas a Pagar e Receber
 -- ============================================================================
 
 CREATE TABLE IF NOT EXISTS contas_pagar (
     id SERIAL PRIMARY KEY,
     descricao VARCHAR(255) NOT NULL,
-    categoria VARCHAR(100), -- Combustível, Manutenção, Salários, etc
+    categoria VARCHAR(100), -- Combustï¿½vel, Manutenï¿½ï¿½o, Salï¿½rios, etc
     fornecedor_id INTEGER REFERENCES clientes(id),
     viagem_id INTEGER REFERENCES viagens(id),
     valor DECIMAL(12,2) NOT NULL,
@@ -265,7 +256,7 @@ CREATE TABLE IF NOT EXISTS contas_pagar (
 CREATE TABLE IF NOT EXISTS contas_receber (
     id SERIAL PRIMARY KEY,
     descricao VARCHAR(255) NOT NULL,
-    categoria VARCHAR(100), -- Frete, Serviço, etc
+    categoria VARCHAR(100), -- Frete, Serviï¿½o, etc
     cliente_id INTEGER REFERENCES clientes(id),
     viagem_id INTEGER REFERENCES viagens(id),
     valor DECIMAL(12,2) NOT NULL,
@@ -283,7 +274,7 @@ CREATE TABLE IF NOT EXISTS contas_receber (
 );
 
 -- ============================================================================
--- Parcelas e Recorrências
+-- Parcelas e Recorrï¿½ncias
 -- ============================================================================
 
 CREATE TABLE IF NOT EXISTS parcelas (
@@ -324,7 +315,7 @@ CREATE TABLE IF NOT EXISTS recorrencias (
 );
 
 -- ============================================================================
--- Caixa e Movimentações
+-- Caixa e Movimentaï¿½ï¿½es
 -- ============================================================================
 
 CREATE TABLE IF NOT EXISTS caixa (
@@ -346,7 +337,7 @@ CREATE TABLE IF NOT EXISTS caixa (
 );
 
 -- ============================================================================
--- Alertas e Notificações
+-- Alertas e Notificaï¿½ï¿½es
 -- ============================================================================
 
 CREATE TABLE IF NOT EXISTS alertas (
@@ -365,10 +356,10 @@ CREATE TABLE IF NOT EXISTS alertas (
 );
 
 -- ============================================================================
--- Índices para Performance
+-- ï¿½ndices para Performance
 -- ============================================================================
 
--- Usuários e Auth
+-- Usuï¿½rios e Auth
 CREATE INDEX IF NOT EXISTS idx_users_username ON users(username);
 CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
 CREATE INDEX IF NOT EXISTS idx_users_role ON users(role_id);
@@ -416,20 +407,20 @@ CREATE INDEX IF NOT EXISTS idx_alertas_user ON alertas(user_id);
 -- Dados Iniciais (Seed Data)
 -- ============================================================================
 
--- Roles Padrão
+-- Roles Padrï¿½o
 INSERT INTO roles (name, description, permissions) VALUES
 ('Admin', 'Administrador do sistema com acesso total',
  '["*:*"]'::jsonb),
-('Gerente', 'Gerente com permissões de supervisão',
+('Gerente', 'Gerente com permissï¿½es de supervisï¿½o',
  '["motoristas:*", "veiculos:*", "clientes:*", "viagens:*", "contas_pagar:visualizar", "contas_receber:*", "relatorios:*"]'::jsonb),
-('Operador', 'Operador com permissões básicas',
+('Operador', 'Operador com permissï¿½es bï¿½sicas',
  '["viagens:visualizar", "viagens:criar", "motoristas:visualizar", "veiculos:visualizar", "clientes:visualizar"]'::jsonb),
-('Financeiro', 'Responsável pela área financeira',
+('Financeiro', 'Responsï¿½vel pela ï¿½rea financeira',
  '["contas_pagar:*", "contas_receber:*", "parcelas:*", "caixa:*", "relatorios:financeiro"]'::jsonb)
 ON CONFLICT (name) DO NOTHING;
 
--- Usuário Admin Padrão (senha: admin123)
--- IMPORTANTE: ALTERE A SENHA EM PRODUÇÃO!
+-- Usuï¿½rio Admin Padrï¿½o (senha: admin123)
+-- IMPORTANTE: ALTERE A SENHA EM PRODUï¿½ï¿½O!
 INSERT INTO users (username, email, password, nome_completo, role_id, active) VALUES
 ('admin', 'admin@gestao-frete.com', '$2a$10$X8qJ3Q7Z9Y.K8xN5W2fZJO4YzJ1vK3hX6mQ2wR5tY7uP8nV9kL1mG', 'Administrador do Sistema', 1, true)
 ON CONFLICT (username) DO NOTHING;
@@ -468,10 +459,10 @@ BEGIN
 END $$;
 
 -- ============================================================================
--- Views úteis para relatórios
+-- Views ï¿½teis para relatï¿½rios
 -- ============================================================================
 
--- View de viagens com informações completas
+-- View de viagens com informaï¿½ï¿½es completas
 CREATE OR REPLACE VIEW vw_viagens_completas AS
 SELECT
     v.*,
@@ -524,10 +515,40 @@ WHERE cr.status = 'pendente' AND cr.deleted_at IS NULL
 ORDER BY cr.data_vencimento;
 
 -- ============================================================================
--- Finalização
+-- Triggers para cÃ¡lculos automÃ¡ticos
 -- ============================================================================
 
--- Comentário informativo
-COMMENT ON DATABASE CURRENT_DATABASE() IS 'Sistema de Gestão de Fretes - Banco de Dados Inicializado';
+-- Trigger para calcular valor_total e km_percorrido em viagens
+CREATE OR REPLACE FUNCTION calculate_viagem_fields()
+RETURNS TRIGGER AS $$
+BEGIN
+    -- Calcular valor_total
+    NEW.valor_total := COALESCE(NEW.valor_frete, 0) +
+                       COALESCE(NEW.valor_pedagio, 0) +
+                       COALESCE(NEW.valor_combustivel, 0) +
+                       COALESCE(NEW.outras_despesas, 0);
+
+    -- Calcular km_percorrido
+    IF NEW.km_final IS NOT NULL AND NEW.km_inicial IS NOT NULL THEN
+        NEW.km_percorrido := NEW.km_final - NEW.km_inicial;
+    ELSE
+        NEW.km_percorrido := NULL;
+    END IF;
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trg_calculate_viagem_fields
+BEFORE INSERT OR UPDATE ON viagens
+FOR EACH ROW
+EXECUTE FUNCTION calculate_viagem_fields();
+
+-- ============================================================================
+-- FinalizaÃ§Ã£o
+-- ============================================================================
+
+-- Comentï¿½rio informativo
+COMMENT ON DATABASE CURRENT_DATABASE() IS 'Sistema de Gestï¿½o de Fretes - Banco de Dados Inicializado';
 
 SELECT 'Banco de dados inicializado com sucesso!' AS status;
