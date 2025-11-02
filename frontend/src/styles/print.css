@@ -1,0 +1,212 @@
+/**
+ * Estilos para Impressão (@media print)
+ *
+ * Otimiza a impressão de relatórios, tabelas e dashboards.
+ * Seção 20 do tema.md: fundo branco, texto escuro, sem navegação.
+ */
+
+@media print {
+  /* Reset geral para impressão */
+  * {
+    background: white !important;
+    color: black !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+
+  /* Ocultar elementos de navegação */
+  nav,
+  aside,
+  button,
+  .no-print,
+  [aria-label*="menu"],
+  [aria-label*="sidebar"] {
+    display: none !important;
+  }
+
+  /* Ajustar conteúdo principal */
+  main {
+    margin: 0 !important;
+    padding: 0 !important;
+    max-width: 100% !important;
+  }
+
+  /* Cabeçalho com logo e data */
+  body::before {
+    content: 'Gestão Frete - Relatório';
+    display: block;
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 16px;
+    padding-bottom: 8px;
+    border-bottom: 2px solid black;
+  }
+
+  body::after {
+    content: 'Data: ' attr(data-print-date);
+    display: block;
+    font-size: 10px;
+    margin-top: 16px;
+    text-align: right;
+  }
+
+  /* Margens da página */
+  @page {
+    margin: 24px 32px;
+    size: A4;
+  }
+
+  /* Títulos */
+  h1,
+  h2,
+  h3 {
+    page-break-after: avoid;
+    margin-top: 16px;
+    margin-bottom: 8px;
+  }
+
+  h1 {
+    font-size: 20px;
+  }
+
+  h2 {
+    font-size: 16px;
+  }
+
+  h3 {
+    font-size: 14px;
+  }
+
+  /* Tabelas */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    page-break-inside: auto;
+    margin-bottom: 16px;
+  }
+
+  thead {
+    display: table-header-group;
+    background: #f0f0f0 !important;
+  }
+
+  tbody {
+    display: table-row-group;
+  }
+
+  tr {
+    page-break-inside: avoid;
+    page-break-after: auto;
+  }
+
+  th,
+  td {
+    border: 1px solid #ddd !important;
+    padding: 8px !important;
+    text-align: left;
+    font-size: 11px;
+  }
+
+  th {
+    font-weight: bold;
+    background: #f0f0f0 !important;
+  }
+
+  /* Cards */
+  .bg-card,
+  .bg-surface {
+    background: white !important;
+    border: 1px solid #ddd !important;
+    padding: 12px;
+    margin-bottom: 12px;
+  }
+
+  /* Links */
+  a {
+    text-decoration: underline;
+  }
+
+  a[href]:after {
+    content: ' (' attr(href) ')';
+    font-size: 10px;
+    color: #666 !important;
+  }
+
+  /* Gráficos */
+  .recharts-wrapper {
+    max-height: 300px !important;
+  }
+
+  /* Badges e Tags */
+  .badge,
+  .tag {
+    border: 1px solid black !important;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 10px;
+  }
+
+  /* Quebra de página */
+  .page-break {
+    page-break-after: always;
+  }
+
+  .page-break-before {
+    page-break-before: always;
+  }
+
+  .avoid-break {
+    page-break-inside: avoid;
+  }
+
+  /* Totais e resumos */
+  .totais,
+  .resumo,
+  .summary {
+    border-top: 2px solid black !important;
+    border-bottom: 2px solid black !important;
+    padding: 12px;
+    margin: 16px 0;
+    font-weight: bold;
+  }
+
+  /* Rodapé */
+  footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    text-align: center;
+    font-size: 10px;
+    padding: 8px;
+    border-top: 1px solid #ddd;
+  }
+
+  /* Ocultar modais e overlays */
+  [role="dialog"],
+  [role="alertdialog"],
+  .modal,
+  .overlay,
+  .toast {
+    display: none !important;
+  }
+
+  /* Forçar exibição de conteúdo oculto relevante */
+  .print-only {
+    display: block !important;
+  }
+
+  /* Evitar órfãos e viúvas */
+  p,
+  li {
+    orphans: 3;
+    widows: 3;
+  }
+}
+
+/* Classes utilitárias para impressão */
+@media screen {
+  .print-only {
+    display: none;
+  }
+}
