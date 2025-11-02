@@ -101,6 +101,24 @@ Anote os valores gerados, voc� vai precisar deles.
 
 9. Clique em **"Deploy"**
 
+**📊 Inicialização Automática do Banco:**
+
+Na primeira inicialização, o backend detecta automaticamente que o banco está vazio e executa a migração completa, criando:
+- ✅ Todas as tabelas (RBAC, Cadastros, Viagens, Financeiro, etc)
+- ✅ Índices de performance
+- ✅ Views úteis
+- ✅ Usuário admin padrão (username: `admin`, senha: `admin123`)
+
+Você verá no log do backend:
+```
+🔄 Banco de dados vazio detectado. Executando migração inicial...
+✅ Banco de dados inicializado com sucesso!
+👤 Usuário padrão criado: admin / admin123
+⚠️  IMPORTANTE: Altere a senha padrão!
+```
+
+**⚠️ ATENÇÃO:** Altere a senha do usuário `admin` imediatamente após o primeiro login!
+
 ---
 
 ## <� Passo 4: Criar Servi�o Frontend

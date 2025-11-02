@@ -8,6 +8,7 @@ import logger from './config/logger.js';
 import './scripts/cron.js';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
+import { checkAndMigrate } from './database/checkAndMigrate.js';
 import notasRoutes from './routes/notas.js';
 import relatoriosRoutes from './routes/relatorios.js';
 import uploadRoutes from './routes/upload.js';
@@ -477,7 +478,12 @@ async function initDatabase() {
 // Iniciar servidor
 app.listen(PORT, async () => {
   logger.info(`Servidor rodando na porta ${PORT}`);
-  await initDatabase();
+  try {
+    await checkAndMigrate();
+  } catch (error) {
+    logger.error('Erro crítico ao inicializar banco de dados:', error);
+    process.exit(1);
+  }
 });
 
 export default app;
