@@ -1,36 +1,36 @@
-# =€ Deploy no Easypanel
+# =ï¿½ Deploy no Easypanel
 
-Guia completo para fazer deploy do Sistema de Gestão de Fretes no Easypanel.
+Guia completo para fazer deploy do Sistema de Gestï¿½o de Fretes no Easypanel.
 
 ---
 
-## =Ë Pré-requisitos
+## =ï¿½ Prï¿½-requisitos
 
 1. Conta no Easypanel com servidor configurado
-2. Repositório Git conectado (GitHub/GitLab)
-3. 2 subdomínios configurados:
-   - `api.seudominio.com` ’ Backend
-   - `app.seudominio.com` ’ Frontend
+2. Repositï¿½rio Git conectado (GitHub/GitLab)
+3. 2 subdomï¿½nios configurados:
+   - `api.seudominio.com` ï¿½ Backend
+   - `app.seudominio.com` ï¿½ Frontend
 
 ---
 
 ## = Passo 1: Gerar Secrets Fortes
 
-Antes de começar, gere secrets criptográficos fortes:
+Antes de comeï¿½ar, gere secrets criptogrï¿½ficos fortes:
 
 ```bash
 # Execute 2 vezes para gerar JWT_SECRET e JWT_REFRESH_SECRET
 node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"
 ```
 
-Anote os valores gerados, você vai precisar deles.
+Anote os valores gerados, vocï¿½ vai precisar deles.
 
 ---
 
-## =Ä Passo 2: Criar Serviço PostgreSQL
+## =ï¿½ Passo 2: Criar Serviï¿½o PostgreSQL
 
 1. No Easypanel, clique em **"Create Service"**
-2. Selecione **"Database" ’ "PostgreSQL"**
+2. Selecione **"Database" ï¿½ "PostgreSQL"**
 3. Configure:
    - **Service Name:** `gestao-frete-db`
    - **Version:** `16-alpine`
@@ -40,7 +40,7 @@ Anote os valores gerados, você vai precisar deles.
 
 4. **Storage (Volume):**
    - Path: `/var/lib/postgresql/data`
-   - Size: `10GB` (mínimo)
+   - Size: `10GB` (mï¿½nimo)
 
 5. **Environment Variables:**
    ```
@@ -52,18 +52,18 @@ Anote os valores gerados, você vai precisar deles.
 
 ---
 
-## =' Passo 3: Criar Serviço Backend (API)
+## =' Passo 3: Criar Serviï¿½o Backend (API)
 
-1. Clique em **"Create Service"** ’ **"App"**
+1. Clique em **"Create Service"** ï¿½ **"App"**
 2. Configure:
    - **Service Name:** `gestao-frete-backend`
-   - **Source:** Conecte seu repositório Git
+   - **Source:** Conecte seu repositï¿½rio Git
    - **Branch:** `master` ou `main`
 
 3. **Build Settings:**
    - **Build Type:** `Dockerfile`
-   - **Dockerfile Path:** `backend/Dockerfile`
-   - **Build Context:** `backend`
+   - **Dockerfile Path:** `backend/Dockerfile.easypanel`
+   - **Build Context:** `.` (raiz do projeto)
 
 4. **Environment Variables:**
    ```
@@ -86,9 +86,9 @@ Anote os valores gerados, você vai precisar deles.
 
 6. **Storage (Volumes):**
    Crie 3 volumes persistentes:
-   - `/app/uploads` ’ 20GB
-   - `/app/backups` ’ 10GB
-   - `/app/logs` ’ 2GB
+   - `/app/uploads` ï¿½ 20GB
+   - `/app/backups` ï¿½ 10GB
+   - `/app/logs` ï¿½ 2GB
 
 7. **Health Check:**
    - **Path:** `/health`
@@ -103,12 +103,12 @@ Anote os valores gerados, você vai precisar deles.
 
 ---
 
-## <¨ Passo 4: Criar Serviço Frontend
+## <ï¿½ Passo 4: Criar Serviï¿½o Frontend
 
-1. Clique em **"Create Service"** ’ **"App"**
+1. Clique em **"Create Service"** ï¿½ **"App"**
 2. Configure:
    - **Service Name:** `gestao-frete-frontend`
-   - **Source:** Mesmo repositório Git
+   - **Source:** Mesmo repositï¿½rio Git
    - **Branch:** `master` ou `main`
 
 3. **Build Settings:**
@@ -116,7 +116,7 @@ Anote os valores gerados, você vai precisar deles.
    - **Dockerfile Path:** `frontend/Dockerfile`
    - **Build Context:** `frontend`
 
-4. **  Build Arguments (IMPORTANTE!):**
+4. **ï¿½ Build Arguments (IMPORTANTE!):**
    ```
    VITE_API_URL=https://api.seudominio.com
    ```
@@ -124,7 +124,7 @@ Anote os valores gerados, você vai precisar deles.
    **Onde configurar:**
    - No Easypanel, procure por "Build Arguments" ou "Build-time Environment Variables"
    - Adicione: `VITE_API_URL` com o valor `https://api.seudominio.com`
-   - **CRÍTICO:** Este valor é injetado durante o build e define onde o frontend vai buscar a API
+   - **CRï¿½TICO:** Este valor ï¿½ injetado durante o build e define onde o frontend vai buscar a API
 
 5. **Networking:**
    - **Port:** `80`
@@ -144,19 +144,19 @@ Anote os valores gerados, você vai precisar deles.
 
 ---
 
-## = Ordem de Inicialização
+## = Ordem de Inicializaï¿½ï¿½o
 
-O Easypanel deve iniciar os serviços nesta ordem:
+O Easypanel deve iniciar os serviï¿½os nesta ordem:
 
 1. **PostgreSQL** (precisa estar 100% pronto)
 2. **Backend** (aguarda PostgreSQL estar healthy)
 3. **Frontend** (aguarda Backend estar healthy)
 
-Configure **dependencies** no Easypanel se necessário.
+Configure **dependencies** no Easypanel se necessï¿½rio.
 
 ---
 
-## >ê Passo 5: Testar Deploy
+## >ï¿½ Passo 5: Testar Deploy
 
 ### 5.1 Testar Backend
 ```bash
@@ -167,22 +167,22 @@ curl https://api.seudominio.com/health
 ### 5.2 Testar Frontend
 Abra no navegador: `https://app.seudominio.com`
 
-Você deve ver a tela de login do sistema.
+Vocï¿½ deve ver a tela de login do sistema.
 
-### 5.3 Testar Conexão API
+### 5.3 Testar Conexï¿½o API
 No navegador, abra DevTools (F12) e veja a aba **Network**.
-Ao tentar fazer login, você deve ver requisições para:
+Ao tentar fazer login, vocï¿½ deve ver requisiï¿½ï¿½es para:
 ```
 https://api.seudominio.com/api/auth/login
 ```
 
 ---
 
-## =á Passo 6: Segurança
+## =ï¿½ Passo 6: Seguranï¿½a
 
 ### 6.1 CORS no Backend
 
-Verifique se o backend aceita requisições do seu domínio frontend:
+Verifique se o backend aceita requisiï¿½ï¿½es do seu domï¿½nio frontend:
 
 **backend/src/server.js:**
 ```javascript
@@ -194,15 +194,15 @@ app.use(cors({
 }));
 ```
 
-### 6.2 Environment Variables Sensíveis
+### 6.2 Environment Variables Sensï¿½veis
 
  **Nunca commite valores reais no Git**
 - Use `.env.example` como template
 - Configure valores reais apenas no Easypanel
 
-### 6.3 HTTPS Obrigatório
+### 6.3 HTTPS Obrigatï¿½rio
 
- Certifique-se que ambos os domínios usam HTTPS:
+ Certifique-se que ambos os domï¿½nios usam HTTPS:
 - `https://api.seudominio.com`
 - `https://app.seudominio.com`
 
@@ -210,12 +210,12 @@ app.use(cors({
 
 ## =' Troubleshooting
 
-### L Frontend não conecta na API
+### L Frontend nï¿½o conecta na API
 
-**Problema:** Erro de CORS ou API não encontrada
+**Problema:** Erro de CORS ou API nï¿½o encontrada
 
-**Solução:**
-1. Verifique se `VITE_API_URL` foi configurado como **Build Argument** (não como ENV comum)
+**Soluï¿½ï¿½o:**
+1. Verifique se `VITE_API_URL` foi configurado como **Build Argument** (nï¿½o como ENV comum)
 2. Rebuild o frontend com o Build Argument correto
 3. Limpe o cache do browser (Ctrl+Shift+R)
 
@@ -226,33 +226,59 @@ console.log(import.meta.env.VITE_API_URL)
 // Deve retornar: https://api.seudominio.com
 ```
 
-### L Backend não conecta no PostgreSQL
+### L Backend nï¿½o conecta no PostgreSQL
 
 **Problema:** `ECONNREFUSED` ou timeout
 
-**Solução:**
-1. Verifique se o `DB_HOST` está correto (nome do serviço PostgreSQL)
-2. Certifique-se que os serviços estão na mesma **network** no Easypanel
+**Soluï¿½ï¿½o:**
+1. Verifique se o `DB_HOST` estï¿½ correto (nome do serviï¿½o PostgreSQL)
+2. Certifique-se que os serviï¿½os estï¿½o na mesma **network** no Easypanel
 3. Verifique logs do PostgreSQL
 
 ### L Erro 502 Bad Gateway
 
-**Problema:** Nginx não consegue conectar no backend
+**Problema:** Nginx nï¿½o consegue conectar no backend
 
-**Solução:**
-1. Verifique se o backend está rodando (health check)
-2. Confirme que a porta `3001` está exposta
+**Soluï¿½ï¿½o:**
+1. Verifique se o backend estï¿½ rodando (health check)
+2. Confirme que a porta `3001` estï¿½ exposta
 3. Verifique logs do backend
+
+### âŒ Erro: npm ci needs package-lock.json
+
+**Problema:** Build do backend falha com erro:
+```
+npm error The `npm ci` command can only install with an existing package-lock.json
+```
+
+**Causa:** O Easypanel estÃ¡ usando build context incorreto ou vocÃª usou o Dockerfile errado.
+
+**SoluÃ§Ã£o:**
+1. **Use o Dockerfile correto:** `backend/Dockerfile.easypanel` (NÃƒO `backend/Dockerfile`)
+2. **Configure Build Context:** `.` (raiz do projeto, nÃ£o `backend`)
+3. Verifique se o repositÃ³rio tem o `package-lock.json` commitado:
+   ```bash
+   git ls-files | grep package-lock.json
+   # Deve mostrar: backend/package-lock.json
+   ```
+
+**ConfiguraÃ§Ã£o correta no Easypanel:**
+```
+Dockerfile Path: backend/Dockerfile.easypanel
+Build Context: . (ou deixe vazio/padrÃ£o)
+```
+
+O `Dockerfile.easypanel` foi criado especificamente para funcionar quando o Easypanel clona o repositÃ³rio inteiro e usa a raiz como build context.
 
 ---
 
-## =Ê Monitoramento
+## =ï¿½ Monitoramento
 
 ### Logs no Easypanel
 
-Acesse os logs de cada serviço:
-- **PostgreSQL:** Logs de queries e conexões
-- **Backend:** Logs de requisições (Winston)
+Acesse os logs de cada serviï¿½o:
+- **PostgreSQL:** Logs de queries e conexï¿½es
+- **Backend:** Logs de requisiï¿½ï¿½es (Winston)
 - **Frontend:** Logs do Nginx (access/error)
 
 ### Health Checks
@@ -264,29 +290,29 @@ O Easypanel monitora automaticamente:
 
 ---
 
-## =€ Deploy de Atualizações
+## =ï¿½ Deploy de Atualizaï¿½ï¿½es
 
-### Opção 1: Auto-deploy (Recomendado)
+### Opï¿½ï¿½o 1: Auto-deploy (Recomendado)
 
-Configure webhook no GitHub/GitLab para rebuild automático quando fizer push para `master`.
+Configure webhook no GitHub/GitLab para rebuild automï¿½tico quando fizer push para `master`.
 
-### Opção 2: Deploy Manual
+### Opï¿½ï¿½o 2: Deploy Manual
 
-No Easypanel, clique em **"Rebuild"** no serviço que deseja atualizar.
+No Easypanel, clique em **"Rebuild"** no serviï¿½o que deseja atualizar.
 
-**  IMPORTANTE para Frontend:**
-Sempre que rebuild o frontend, certifique-se que o **Build Argument** `VITE_API_URL` ainda está configurado!
+**ï¿½ IMPORTANTE para Frontend:**
+Sempre que rebuild o frontend, certifique-se que o **Build Argument** `VITE_API_URL` ainda estï¿½ configurado!
 
 ---
 
-## =æ Backup
+## =ï¿½ Backup
 
 ### Backup do PostgreSQL
 
-Configure backup automático no Easypanel ou via cron:
+Configure backup automï¿½tico no Easypanel ou via cron:
 
 ```bash
-# No serviço PostgreSQL, crie um cron job:
+# No serviï¿½o PostgreSQL, crie um cron job:
 0 2 * * * pg_dump -U postgres gestao_frete > /backups/db_$(date +\%Y\%m\%d).sql
 ```
 
@@ -296,34 +322,34 @@ Configure backup do volume `/app/uploads` para S3 ou similar.
 
 ---
 
-## <¯ Checklist Final
+## <ï¿½ Checklist Final
 
-Antes de marcar como "pronto para produção":
+Antes de marcar como "pronto para produï¿½ï¿½o":
 
 - [ ] PostgreSQL com senha forte
-- [ ] JWT_SECRET e JWT_REFRESH_SECRET únicos e seguros
-- [ ] HTTPS habilitado em ambos os domínios
+- [ ] JWT_SECRET e JWT_REFRESH_SECRET ï¿½nicos e seguros
+- [ ] HTTPS habilitado em ambos os domï¿½nios
 - [ ] CORS configurado corretamente no backend
 - [ ] `VITE_API_URL` configurado como Build Argument no frontend
 - [ ] Health checks funcionando (Backend + Frontend)
 - [ ] Volumes persistentes configurados (uploads, backups, logs)
-- [ ] Backup automático do banco de dados
+- [ ] Backup automï¿½tico do banco de dados
 - [ ] Logs sendo monitorados
 - [ ] Resource limits configurados
 
 ---
 
-## =Þ Suporte
+## =ï¿½ Suporte
 
 Se encontrar problemas:
 
 1. Verifique os logs no Easypanel
 2. Teste os health checks manualmente
-3. Confirme que as variáveis de ambiente estão corretas
-4. Verifique se os serviços estão na mesma network
+3. Confirme que as variï¿½veis de ambiente estï¿½o corretas
+4. Verifique se os serviï¿½os estï¿½o na mesma network
 
 ---
 
-** Deploy concluído com sucesso!**
+** Deploy concluï¿½do com sucesso!**
 
-Acesse: `https://app.seudominio.com` =€
+Acesse: `https://app.seudominio.com` =ï¿½

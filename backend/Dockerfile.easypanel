@@ -1,17 +1,25 @@
+# ====================================================================
+# Dockerfile para Easypanel (build context na raiz do projeto)
+# ====================================================================
+# Use este Dockerfile quando o Easypanel estiver configurado com:
+# - Dockerfile Path: backend/Dockerfile.easypanel
+# - Build Context: . (raiz do projeto)
+# ====================================================================
+
 # Multi-stage build for production
 FROM node:20-alpine AS builder
 
 WORKDIR /app
 
-# Copy package files
-COPY package*.json ./
+# Copy package files from backend directory
+COPY backend/package*.json ./
 
 # Install dependencies (production only)
 RUN npm ci --omit=dev && \
     npm cache clean --force
 
-# Copy source code
-COPY . .
+# Copy backend source code
+COPY backend/ ./
 
 # ===========================
 # Production stage
@@ -29,7 +37,7 @@ WORKDIR /app
 
 # Copy dependencies from builder
 COPY --from=builder --chown=nodejs:nodejs /app/node_modules ./node_modules
-COPY --chown=nodejs:nodejs . .
+COPY --from=builder --chown=nodejs:nodejs /app/ ./
 
 # Create necessary directories with correct permissions
 RUN mkdir -p /app/uploads/pdfs /app/uploads/fotos /app/uploads/comprovantes /app/backups /app/logs && \
