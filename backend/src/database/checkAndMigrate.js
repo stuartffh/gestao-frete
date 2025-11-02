@@ -2,13 +2,14 @@ import { readFileSync } from 'fs';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import { pool } from '../config/database.js';
+import { executeSqlFile } from './sqlExecutor.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 /**
- * Verifica se o banco está inicializado e executa migração se necessário
- * @returns {Promise<boolean>} true se migração foi executada, false se já estava inicializado
+ * Verifica se o banco estï¿½ inicializado e executa migraï¿½ï¿½o se necessï¿½rio
+ * @returns {Promise<boolean>} true se migraï¿½ï¿½o foi executada, false se jï¿½ estava inicializado
  */
 export async function checkAndMigrate() {
   try {
@@ -24,21 +25,21 @@ export async function checkAndMigrate() {
     const tableExists = result.rows[0].table_exists;
 
     if (!tableExists) {
-      console.log('= Banco de dados vazio detectado. Executando migração inicial...\n');
+      console.log('= Banco de dados vazio detectado. Executando migraï¿½ï¿½o inicial...\n');
 
       // Ler e executar init.sql
       const sqlPath = join(__dirname, 'init.sql');
       const sql = readFileSync(sqlPath, 'utf8');
-      await pool.query(sql);
+      await executeSqlFile(sql);
 
       console.log(' Banco de dados inicializado com sucesso!');
-      console.log('=d Usuário padrão criado: admin / admin123');
-      console.log('   IMPORTANTE: Altere a senha padrão!\n');
+      console.log('=d Usuï¿½rio padrï¿½o criado: admin / admin123');
+      console.log('ï¿½  IMPORTANTE: Altere a senha padrï¿½o!\n');
 
       return true;
     }
 
-    console.log(' Banco de dados já inicializado');
+    console.log(' Banco de dados jï¿½ inicializado');
     return false;
 
   } catch (error) {

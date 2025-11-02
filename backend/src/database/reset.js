@@ -2,6 +2,7 @@ import { readFileSync } from 'fs';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import { pool } from '../config/database.js';
+import { executeSqlFile } from './sqlExecutor.js';
 import readline from 'readline';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -14,7 +15,7 @@ function askConfirmation() {
       output: process.stdout
     });
 
-    rl.question('   ATENÇÃO: Isso irá APAGAR TODOS OS DADOS do banco! Confirma? (sim/não): ', (answer) => {
+    rl.question('ï¿½  ATENï¿½ï¿½O: Isso irï¿½ APAGAR TODOS OS DADOS do banco! Confirma? (sim/nï¿½o): ', (answer) => {
       rl.close();
       resolve(answer.toLowerCase() === 'sim');
     });
@@ -24,22 +25,22 @@ function askConfirmation() {
 async function reset() {
   console.log('= Reset do Banco de Dados\n');
 
-  // Confirmar ação em produção
+  // Confirmar aï¿½ï¿½o em produï¿½ï¿½o
   if (process.env.NODE_ENV === 'production') {
     const confirmed = await askConfirmation();
     if (!confirmed) {
-      console.log('L Operação cancelada pelo usuário');
+      console.log('L Operaï¿½ï¿½o cancelada pelo usuï¿½rio');
       process.exit(0);
     }
   }
 
   try {
-    // Verificar conexão
+    // Verificar conexï¿½o
     await pool.query('SELECT NOW()');
-    console.log(' Conexão estabelecida');
+    console.log(' Conexï¿½o estabelecida');
 
     // Drop de todas as tabelas
-    console.log('\n=Ñ  Removendo tabelas existentes...');
+    console.log('\n=ï¿½  Removendo tabelas existentes...');
     await pool.query(`
       DROP TABLE IF EXISTS alertas CASCADE;
       DROP TABLE IF EXISTS caixa CASCADE;
@@ -69,10 +70,10 @@ async function reset() {
     console.log('\n=( Recriando estrutura do banco...');
     const sqlPath = join(__dirname, 'init.sql');
     const sql = readFileSync(sqlPath, 'utf8');
-    await pool.query(sql);
+    await executeSqlFile(sql);
 
     console.log('\n Banco de dados resetado com sucesso!');
-    console.log('\n=d Usuário padrão recriado:');
+    console.log('\n=d Usuï¿½rio padrï¿½o recriado:');
     console.log('   Username: admin');
     console.log('   Senha: admin123\n');
 
